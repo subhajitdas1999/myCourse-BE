@@ -1,31 +1,48 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  PutObjectCommand,
+  S3Client,
+  ListObjectsV2Command,
+} from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class S3uploadService {
+export class AWSS3Service {
   private readonly s3Client: S3Client;
 
   constructor() {
     this.s3Client = new S3Client({
-      region: 'eu-north-1',
+      region: process.env.BUCKET_REGION,
       credentials: {
-        accessKeyId: 'AKIAX7VYKVR2GDKJPYNY',
-        secretAccessKey: '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',
+        accessKeyId: process.env.ACCESS_KEY,
+        secretAccessKey: process.env.SECRETE_ACCESS_KEY,
       },
     });
   }
   async uploadImage(file: Buffer, filename: string) {
     const command = new PutObjectCommand({
-      Bucket: 'nestjs-upload-image',
+      Bucket: process.env.BUCKET_NAME,
       Key: filename,
       Body: file,
     });
     try {
       const result = await this.s3Client.send(command);
-      console.log('result ', result);
+      return result;
     } catch (err) {
       console.log(err);
     }
+  }
+
+  async getAllImage() {
+    const command = new ListObjectsV2Command({
+      Bucket: process.env.BUCKET_NAME,
+    });
+    try {
+      const res = await this.s3Client.send(command);
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+    return 'test';
   }
 
   findAll() {

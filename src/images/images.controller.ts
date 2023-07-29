@@ -8,39 +8,43 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { ImagesService } from './images.service';
-import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
-import { FileInterceptor, MulterModule } from '@nestjs/platform-express';
-import { diskStorage, memoryStorage } from 'multer';
-import { S3uploadService } from 'src/s3upload/s3upload.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('images')
 export class ImagesController {
-  constructor(
-    private readonly imagesService: ImagesService,
-    private readonly s3uploadService: S3uploadService,
-  ) {}
+  constructor(private readonly imagesService: ImagesService) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('image'))
-  async create(@UploadedFile() file: Express.Multer.File) {
-    // console.log(file);
-
-    await this.s3uploadService.uploadImage(
-      file.buffer,
-      file.originalname + '_' + Date.now(),
-    );
-    // return {
-    //   file: file.buffer.toString(),
-    // };
-    // return this.imagesService.create();
+  async uploadImage(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: 'image/*' }),
+          new MaxFileSizeValidator({
+            maxSize: parseInt(process.env.MAX_SINGLE_IMAGE_SIZE_IN_BYTES),
+            message: 'File size exceeding 5MB',
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    return await this.imagesService.uploadImage(file);
   }
 
   @Get()
-  findAll() {
-    return this.imagesService.findAll();
+  async findAll() {
+    // return await this.awsS3Service.getAllImage();
+    // console.log(process.env.DATABASE_URL);
+
+    return 'await this.awsS3Service.getAllImage()';
   }
 
   @Get(':id')

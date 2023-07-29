@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { Image } from './entities/image.entity';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { AWSS3Service } from 'src/aws/awss3.service';
 
 @Injectable()
 export class ImagesService {
@@ -12,9 +13,28 @@ export class ImagesService {
       brand: 'buddy',
     },
   ];
+  constructor(
+    private prismaService: PrismaService,
+    private readonly awsS3Service: AWSS3Service,
+  ) {}
 
-  create(createImageDto: CreateImageDto) {
-    return 'This action adds a new image';
+  async uploadImage(file: Express.Multer.File) {
+    const fileName = file.originalname + '_' + Date.now();
+    try {
+      const result = await this.awsS3Service.uploadImage(file.buffer, fileName);
+      if (result.$metadata.httpStatusCode === 200) {
+        await this.prismaService.images.create({
+          data: { imageName: fileName },
+        });
+
+        return {
+          status: 'success',
+          fileName,
+        };
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   findAll() {
