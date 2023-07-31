@@ -1,10 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
+import { AWSS3Service } from 'src/aws/awss3.service';
 
 @Injectable()
 export class VideoService {
-  create(createVideoDto: CreateVideoDto) {
+  constructor(private readonly awsS3Service: AWSS3Service) {}
+  async uploadVideo(file: Express.Multer.File) {
+    const fileName = file.originalname + '_' + Date.now();
+    try {
+      const res = await this.awsS3Service.uploadVideo(file.buffer, fileName);
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+
     return 'got it';
   }
 
