@@ -32,6 +32,21 @@ export class AWSS3Service {
     }
   }
 
+  async uploadVideo(file: Buffer, filename: string) {
+    const command = new PutObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key: filename,
+      Body: file,
+    });
+
+    try {
+      const result = await this.s3Client.send(command);
+      return result;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async getAllImage() {
     const command = new ListObjectsV2Command({
       Bucket: process.env.BUCKET_NAME,
