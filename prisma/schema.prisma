@@ -10,6 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model user {
+  id    String @id @default(uuid())
+  name  String
+  email String @unique
+  salt  String
+  hash  String
+}
+
 model images {
   imageName String   @id
   createdAt DateTime @default(now())
