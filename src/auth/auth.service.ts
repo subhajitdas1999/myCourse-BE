@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -14,12 +15,14 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
   async signup(createAuthDto: CreateAuthDto) {
+    const salt = await bcrypt.genSalt(5);
+    const hashPassword = await bcrypt.hash(createAuthDto.password, salt);
     const user = await this.prismaService.user.create({
-      data: { ...createAuthDto },
+      data: { email: createAuthDto.email, hashPassword },
     });
-    console.log(user);
+    const payload = { email: user.email, sub: user.id };
 
-    return 'This action adds a new auth';
+    return { access_token: this.jwtService.sign(payload) };
   }
 
   async login(user: user) {
@@ -29,7 +32,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     const user = await this.userService.findOne(email);
-    if (user && user.password === password) {
+    if (user && (await bcrypt.compare(password, user.hashPassword))) {
       return user;
     }
     return null;
