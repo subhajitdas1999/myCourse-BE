@@ -13,16 +13,19 @@ import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LocalAuthGuard } from './local-auth.guard';
+import { AuthPipe } from './auth.pipe';
+import { Public } from './auth.public';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('/signup')
-  async signup(@Body() createAuthDto: CreateAuthDto) {
+  async signup(@Body(AuthPipe) createAuthDto: CreateAuthDto) {
     return this.authService.signup(createAuthDto);
   }
-
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
