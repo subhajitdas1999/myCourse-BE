@@ -9,6 +9,8 @@ export class VideoService {
   async uploadVideo(file: Express.Multer.File) {
     const fileName = file.originalname + '_' + Date.now();
     try {
+      console.log(fileName);
+
       const res = await this.awsS3Service.uploadVideo(file.buffer, fileName);
       console.log(res);
     } catch (err) {
@@ -17,7 +19,17 @@ export class VideoService {
 
     return 'got it';
   }
+  async getOneVideo(fileName: string) {
+    try {
+      console.log(fileName);
 
+      const res = await this.awsS3Service.getOneVideo(fileName);
+      return res;
+      // console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  }
   findAll() {
     return `This action returns all video`;
   }

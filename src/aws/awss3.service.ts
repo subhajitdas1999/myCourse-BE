@@ -2,7 +2,9 @@ import {
   PutObjectCommand,
   S3Client,
   ListObjectsV2Command,
+  GetObjectCommand,
 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -57,7 +59,21 @@ export class AWSS3Service {
     } catch (err) {
       console.log(err);
     }
-    return 'test';
+  }
+
+  async getOneVideo(filename: string) {
+    const command = new GetObjectCommand({
+      Bucket: process.env.BUCKET_NAME,
+      Key: filename,
+    });
+
+    try {
+      const url = await getSignedUrl(this.s3Client, command, { expiresIn: 20 });
+      // const url = await this.s3Client.send(command);
+      return url;
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   findAll() {
