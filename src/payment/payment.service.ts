@@ -3,7 +3,10 @@ import { CreateOrderDto } from './dto/create-payment-order.dto';
 import Razorpay from 'razorpay';
 import { VerifyPaymentDto } from './dto/verify-payment.dto';
 import { createHmac } from 'crypto';
-import { validatePaymentVerification } from 'razorpay/dist/utils/razorpay-utils';
+import {
+  validatePaymentVerification,
+  validateWebhookSignature,
+} from 'razorpay/dist/utils/razorpay-utils';
 @Injectable()
 export class PaymentService {
   private readonly instance: Razorpay;
@@ -35,6 +38,28 @@ export class PaymentService {
       return { status: 200, message: 'signature valid' };
     }
     return { status: 403, message: 'signature not valid' };
+  }
+
+  async webhookVerification(webhookBody, webhookSignature: string) {
+    // const headerSignature = req.
+    // console.log(reqBody, webhookSignature);
+    const result = validateWebhookSignature(
+      JSON.stringify(webhookBody),
+      webhookSignature,
+      process.env.RAZORPAY_WEBHOOK_SECRET,
+    );
+    if (result == true) {
+      //legit payment
+      return { status: 200, message: 'ok' };
+    }
+
+    return { status: 402, message: 'Not valid payment' };
+  }
+
+  async getPaymentDetails(paymentId: string) {
+    // const orderDetails = await this.instance.orders.fetch(orderId);
+    const paymentDetails = await this.instance.payments.fetch(paymentId);
+    return paymentDetails.status;
   }
 
   findAll() {
