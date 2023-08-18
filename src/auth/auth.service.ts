@@ -18,11 +18,18 @@ export class AuthService {
     const salt = await bcrypt.genSalt(5);
     const hashPassword = await bcrypt.hash(createAuthDto.password, salt);
     const user = await this.prismaService.user.create({
-      data: { email: createAuthDto.email, hashPassword },
+      data: {
+        email: createAuthDto.email,
+        hashPassword,
+        userName: createAuthDto.userName,
+      },
     });
     const payload = { email: user.email, sub: user.id };
 
-    return { access_token: this.jwtService.sign(payload) };
+    return {
+      jwt: this.jwtService.sign(payload),
+      user: { email: user.email, userName: user.userName },
+    };
   }
 
   async login(user: user) {
