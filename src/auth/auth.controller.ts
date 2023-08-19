@@ -17,32 +17,45 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { AuthPipe } from './auth.pipe';
 import { Public } from './auth.public';
 import { Response } from 'express';
-
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @Post('/signup')
+  @Post('signup')
   async signup(
     @Body(AuthPipe) createAuthDto: CreateAuthDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { jwt, user } = await this.authService.signup(createAuthDto);
-    res.cookie('jwt', jwt, { httpOnly: true });
+    const { jwtToken, user } = await this.authService.signup(createAuthDto);
+    this.handleCookies(res, jwtToken);
     return user;
   }
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@Request() req, @Res({ passthrough: true }) res: Response) {
+    const { jwtToken, user } = await this.authService.login(req.user);
+    this.handleCookies(res, jwtToken);
+    return user;
+  }
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) res: Response) {
+    this.handleCookies(res, '');
+    return { message: 'logout successful' };
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
+  async handleCookies(
+    @Res({ passthrough: true }) res: Response,
+    jwtToken: string,
+  ) {
+    res.cookie('jwt', jwtToken, { httpOnly: true });
   }
+
+  // @Get()
+  // findAll() {
+  //   return this.authService.findAll();
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -57,5 +70,12 @@ export class AuthController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.authService.remove(+id);
+  }
+
+  @Get('test/x')
+  @Public()
+  getAllNames() {
+    const names = ['Alice', 'Bob', 'Charlie']; // Replace with your list of names
+    return { names };
   }
 }
