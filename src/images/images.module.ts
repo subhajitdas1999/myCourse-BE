@@ -9,5 +9,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
   imports: [AwsModule],
   controllers: [ImagesController],
   providers: [ImagesService, PrismaService],
+  exports: [ImagesService],
 })
 export class ImagesModule {}
