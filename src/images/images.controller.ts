@@ -15,7 +15,8 @@ import {
 import { ImagesService } from './images.service';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-
+import { Public } from 'src/auth/auth.public';
+@Public()
 @Controller('images')
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
@@ -37,6 +38,14 @@ export class ImagesController {
     file: Express.Multer.File,
   ) {
     return await this.imagesService.uploadImage(file);
+  }
+
+  @Get(':fileName')
+  async findOneImage(@Param('fileName') fileName: string) {
+    return await this.imagesService.findOneImage(fileName);
+    // console.log(process.env.DATABASE_URL);
+
+    // return 'await this.awsS3Service.getAllImage()';
   }
 
   @Get()
