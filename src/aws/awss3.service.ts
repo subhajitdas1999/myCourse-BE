@@ -22,7 +22,7 @@ export class AWSS3Service {
   }
   async uploadImage(file: Buffer, filename: string) {
     const command = new PutObjectCommand({
-      Bucket: process.env.BUCKET_NAME,
+      Bucket: process.env.PRIVATE_BUCKET_NAME,
       Key: filename,
       Body: file,
     });
@@ -34,9 +34,24 @@ export class AWSS3Service {
     }
   }
 
+  async uploadImageToPublicBucket(file: Buffer, filename: string) {
+    const command = new PutObjectCommand({
+      Bucket: process.env.PUBLIC_BUCKET_NAME,
+      Key: filename,
+      Body: file,
+    });
+    try {
+      await this.s3Client.send(command);
+      const url = `https://${process.env.PUBLIC_BUCKET_NAME}.s3.${process.env.BUCKET_REGION}.amazonaws.com/${filename}`;
+      return url;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async uploadVideo(file: Buffer, filename: string) {
     const command = new PutObjectCommand({
-      Bucket: process.env.BUCKET_NAME,
+      Bucket: process.env.PRIVATE_BUCKET_NAME,
       Key: filename,
       Body: file,
     });
@@ -51,7 +66,7 @@ export class AWSS3Service {
 
   async getAllImage() {
     const command = new ListObjectsV2Command({
-      Bucket: process.env.BUCKET_NAME,
+      Bucket: process.env.PRIVATE_BUCKET_NAME,
     });
     try {
       const res = await this.s3Client.send(command);
@@ -61,9 +76,30 @@ export class AWSS3Service {
     }
   }
 
+  async getOneImage(filename: string) {
+    console.log('fileName', filename);
+
+    const command = new GetObjectCommand({
+      Bucket: process.env.PRIVATE_BUCKET_NAME,
+      Key: filename,
+    });
+
+    try {
+      // this.s3Client.
+      const url = await getSignedUrl(this.s3Client, command);
+      // const url = 'tets';
+      // const url = await this.s3Client.send(command);
+      console.log(url);
+
+      return 'ok';
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async getOneVideo(filename: string) {
     const command = new GetObjectCommand({
-      Bucket: process.env.BUCKET_NAME,
+      Bucket: process.env.PRIVATE_BUCKET_NAME,
       Key: filename,
     });
 
