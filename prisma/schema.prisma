@@ -17,6 +17,14 @@ model user {
   hashPassword String
 }
 
+model course {
+  id             String  @id @default(uuid())
+  title          String
+  description    String
+  price          Decimal
+  courseImageUrl String
+}
+
 model images {
   imageName String   @id
   createdAt DateTime @default(now())
