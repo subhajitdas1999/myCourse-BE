@@ -8,8 +8,16 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { PaymentModule } from './payment/payment.module';
 import { LoggingMiddleware } from './logging/logging.middleware';
+import { CourseModule } from './course/course.module';
 @Module({
-  imports: [VideoModule, ImagesModule, UserModule, AuthModule, PaymentModule],
+  imports: [
+    VideoModule,
+    ImagesModule,
+    UserModule,
+    AuthModule,
+    PaymentModule,
+    CourseModule,
+  ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
