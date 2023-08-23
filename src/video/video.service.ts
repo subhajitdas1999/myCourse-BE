@@ -2,17 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { CreateVideoDto } from './dto/create-video.dto';
 import { UpdateVideoDto } from './dto/update-video.dto';
 import { AWSS3Service } from 'src/aws/awss3.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class VideoService {
-  constructor(private readonly awsS3Service: AWSS3Service) {}
-  async uploadVideo(file: Express.Multer.File) {
-    const fileName = file.originalname + '_' + Date.now();
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly awsS3Service: AWSS3Service,
+  ) {}
+  async uploadVideo(file: Express.Multer.File, createVideoDto: CreateVideoDto) {
+    const fileName = file.originalname.split('.')[0] + '_' + Date.now();
     try {
-      console.log(fileName);
+      // console.log(fileName);
 
-      const res = await this.awsS3Service.uploadVideo(file.buffer, fileName);
-      console.log(res);
+      await this.awsS3Service.uploadVideo(file.buffer, fileName);
+      const video = await this.prismaService.video.create({
+        data: { ...createVideoDto, videoName: fileName },
+      });
+      return video;
     } catch (err) {
       console.log(err);
     }
