@@ -23,6 +23,16 @@ model course {
   description    String
   price          Decimal
   courseImageUrl String
+  videos         video[]
+}
+
+model video {
+  id        String  @id @default(uuid())
+  title     String
+  videoName String
+  videoNo   Decimal
+  course    course  @relation(fields: [courseId], references: [id])
+  courseId  String
 }
 
 model images {
