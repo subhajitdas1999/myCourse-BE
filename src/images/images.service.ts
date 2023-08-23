@@ -19,7 +19,7 @@ export class ImagesService {
   ) {}
 
   async uploadImage(file: Express.Multer.File) {
-    const fileName = file.originalname + '_' + Date.now();
+    const fileName = file.originalname.split('.')[0] + '_' + Date.now();
     try {
       const result = await this.awsS3Service.uploadImage(file.buffer, fileName);
       if (result.$metadata.httpStatusCode === 200) {
@@ -41,7 +41,8 @@ export class ImagesService {
     file: Express.Multer.File,
     folderName: string,
   ) {
-    const fileName = folderName + file.originalname + '_' + Date.now();
+    const fileName =
+      folderName + file.originalname.split('.')[0] + '_' + Date.now();
     try {
       const url = await this.awsS3Service.uploadImageToPublicBucket(
         file.buffer,
