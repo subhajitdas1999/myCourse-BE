@@ -42,7 +42,7 @@ export class CourseController {
   ) {
     return this.courseService.create(file, createCourseDto);
   }
-
+  @Public()
   @Get()
   findAll() {
     return this.courseService.findAll();
