@@ -25,8 +25,17 @@ export class CourseService {
     }
   }
 
-  findAll() {
-    return `This action returns all course`;
+  async findAll() {
+    const courses = await this.prismaService.course.findMany({
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        price: true,
+        courseImageUrl: true,
+      },
+    });
+    return courses;
   }
 
   findOne(id: number) {
