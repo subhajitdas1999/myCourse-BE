@@ -45,6 +45,10 @@ export class VideoController {
   findAll() {
     return this.videoService.findAll();
   }
+  @Get('course/:courseId')
+  findAllVideoInACourse(@Param('courseId') courseId: string) {
+    return this.videoService.findAllVideoInACourse(courseId);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

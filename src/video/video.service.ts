@@ -37,6 +37,15 @@ export class VideoService {
       console.log(err);
     }
   }
+  async findAllVideoInACourse(courseId: string) {
+    const videos = await this.prismaService.video.findMany({
+      where: { courseId },
+      orderBy: {
+        videoNo: 'asc',
+      },
+    });
+    return videos;
+  }
   findAll() {
     return `This action returns all video`;
   }
