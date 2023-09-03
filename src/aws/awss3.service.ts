@@ -104,7 +104,9 @@ export class AWSS3Service {
     });
 
     try {
-      const url = await getSignedUrl(this.s3Client, command, { expiresIn: 20 });
+      const url = await getSignedUrl(this.s3Client, command, {
+        expiresIn: 3600,
+      });
       // const url = await this.s3Client.send(command);
       return url;
     } catch (err) {
