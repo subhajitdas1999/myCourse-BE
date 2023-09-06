@@ -48,8 +48,10 @@ export class AuthService {
     return null;
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async isLoggedIn(user: user) {
+    const userDb = await this.userService.findOne(user.email);
+
+    return { email: userDb.email, userName: userDb.userName };
   }
 
   findOne(id: number) {

@@ -17,6 +17,7 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { AuthPipe } from './auth.pipe';
 import { Public } from './auth.public';
 import { Response } from 'express';
+import { JwtAuthGuard } from './jwt-auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -52,10 +53,11 @@ export class AuthController {
     res.cookie('jwt', jwtToken, { httpOnly: true });
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.authService.findAll();
-  // }
+  @Get('isLoggedIn')
+  @UseGuards(JwtAuthGuard)
+  isLoggedIn(@Request() req) {
+    return this.authService.isLoggedIn(req.user);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
