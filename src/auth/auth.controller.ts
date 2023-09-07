@@ -54,7 +54,6 @@ export class AuthController {
   }
 
   @Get('isLoggedIn')
-  @UseGuards(JwtAuthGuard)
   isLoggedIn(@Request() req) {
     return this.authService.isLoggedIn(req.user);
   }
