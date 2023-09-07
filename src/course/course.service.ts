@@ -3,6 +3,7 @@ import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { ImagesService } from 'src/images/images.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { user } from '@prisma/client';
 
 @Injectable()
 export class CourseService {
@@ -43,6 +44,15 @@ export class CourseService {
       where: { id },
     });
     return course;
+  }
+
+  async isPurchased(courseId: string, user: user) {
+    const purchasedCourse = await this.prismaService.purchaseCourse.findUnique({
+      where: { userId_courseId: { userId: user.id, courseId } },
+    });
+    return {
+      result: purchasedCourse != null,
+    };
   }
 
   update(id: number, updateCourseDto: UpdateCourseDto) {

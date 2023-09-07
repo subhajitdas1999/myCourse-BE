@@ -11,6 +11,7 @@ import {
   ParseFilePipe,
   FileTypeValidator,
   MaxFileSizeValidator,
+  Request,
 } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
@@ -18,7 +19,6 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Public } from 'src/auth/auth.public';
 
-@Public()
 @Controller('course')
 export class CourseController {
   constructor(private readonly courseService: CourseService) {}
@@ -47,10 +47,15 @@ export class CourseController {
   findAll() {
     return this.courseService.findAll();
   }
-
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.courseService.findOne(id);
+  }
+
+  @Get('verify/:courseId')
+  isPurchased(@Param('courseId') courseId: string, @Request() req) {
+    return this.courseService.isPurchased(courseId, req.user);
   }
 
   @Patch(':id')
