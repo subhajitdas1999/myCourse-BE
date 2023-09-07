@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { PaymentModule } from './payment/payment.module';
 import { LoggingMiddleware } from './logging/logging.middleware';
 import { CourseModule } from './course/course.module';
+import { PurchaseModule } from './purchase/purchase.module';
 @Module({
   imports: [
     VideoModule,
@@ -17,6 +18,7 @@ import { CourseModule } from './course/course.module';
     AuthModule,
     PaymentModule,
     CourseModule,
+    PurchaseModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
