@@ -8,9 +8,9 @@ import {
   Headers,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
-import { CreateOrderDto } from './dto/create-payment-order.dto';
+import { CreateOrderDto } from '../purchase/dto/create-payment-order.dto';
 import { Public } from 'src/auth/auth.public';
-import { VerifyPaymentDto } from './dto/verify-payment.dto';
+import { VerifyPaymentDto } from '../purchase/dto/verify-payment.dto';
 
 @Controller('payment')
 @Public()
