@@ -25,4 +25,5 @@ RUN npm install --only=production
 
 # RUN rm package*.json
 EXPOSE 3000
+EXPOSE 5555
 CMD [ "node","dist/main.js" ]
